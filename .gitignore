@@ -341,5 +341,5 @@ healthchecksdb
 
 .vscode/
 
-# Data folder
-data/
+# Data files
+.csv

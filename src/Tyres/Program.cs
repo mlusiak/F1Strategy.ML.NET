@@ -117,7 +117,7 @@ namespace Tyres
                         TrackTemperature = trackTemp, 
                         Reason = stopReason
                     });
-                    Console.WriteLine($"{d.Driver} @ {c}: {prediction.Laps}");
+                    Console.WriteLine($"| {d.Driver} | {c} | {prediction.Laps} |  |");
                 }
             }
 
