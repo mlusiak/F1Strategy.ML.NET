@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices.ComTypes;
 using System.Linq;
 using Microsoft.ML;
+using Tyres.DataModels;
+using Tyres.DomainModels;
+using Tyres.StaticData;
 
 namespace Tyres
 {
@@ -77,63 +78,40 @@ namespace Tyres
             var mvLaps = mvPred.Distance / 5412f;
 
 
-            // Calculate predictions for all drivers
-            var bahrainDrivers = new List<TeamDriverMatch>()
+            // Run predictions for Bahrain
+            var bahrain2021 = new Race()
             {
-                new TeamDriverMatch() {Team = "Mercedes", Car = "W12", Driver = "Lewis Hamilton"},
-                new TeamDriverMatch() {Team = "Mercedes", Car = "W12", Driver = "Valtteri Bottas"},
-                new TeamDriverMatch() {Team = "Red Bull", Car = "RB16B", Driver = "Max Verstappen"},
-                new TeamDriverMatch() {Team = "Red Bull", Car = "RB16B", Driver = "Sergio Pérez"},
-                new TeamDriverMatch() {Team = "McLaren", Car = "MCL35M", Driver = "Lando Norris"},
-                new TeamDriverMatch() {Team = "McLaren", Car = "MCL35M", Driver = "Daniel Ricciardo"},
-                new TeamDriverMatch() {Team = "Force India / Racing Point / Aston Martin", Car = "AMR21", Driver = "Lance Stroll"},
-                new TeamDriverMatch() {Team = "Force India / Racing Point / Aston Martin", Car = "AMR21", Driver = "Sebastian Vettel"},
-                new TeamDriverMatch() {Team = "Renault / Alpine", Car = "A521", Driver = "Fernando Alonso"},
-                new TeamDriverMatch() {Team = "Renault / Alpine", Car = "A521", Driver = "Esteban Ocon"},
-                new TeamDriverMatch() {Team = "Ferrari", Car = "SF21", Driver = "Charles Leclerc"},
-                new TeamDriverMatch() {Team = "Ferrari", Car = "SF21", Driver = "Carlos Sainz"},
-                new TeamDriverMatch() {Team = "Toro Rosso / AlphaTauri", Car = "AT02", Driver = "Pierre Gasly"},
-                new TeamDriverMatch() {Team = "Toro Rosso / AlphaTauri", Car = "AT02", Driver = "Yuki Tsunoda"},
-                new TeamDriverMatch() {Team = "Sauber / Alfa Romeo", Car = "C41", Driver = "Antonio Giovinazzi"},
-                new TeamDriverMatch() {Team = "Sauber / Alfa Romeo", Car = "C41", Driver = "Kimi Räikkönen"},
-                new TeamDriverMatch() {Team = "HAAS", Car = "VF21", Driver = "Nikita Mazepin"},
-                new TeamDriverMatch() {Team = "HAAS", Car = "VF21", Driver = "Mick Schumacher"},
-                new TeamDriverMatch() {Team = "Williams", Car = "FW43B", Driver = "George Russell"},
-                new TeamDriverMatch() {Team = "Williams", Car = "FW43B", Driver = "Nicholas Latifi"},
+                Track = Season2021.Tracks["Bahrain"],
+                Drivers = Season2021.Drivers,
+                TyreCompounds = new List<string>() { "C2", "C3", "C4" },
+                AirTemperature = 20.5f,
+                TrackTemperature = 28.3f
             };
-            var bahrainTyres = new List<string>() { "C2", "C3", "C4" };
-            var airTemp = 20.5f;
-            var trackTemp = 28.3f;
-            var stopReason = "Pit Stop";
-            var trackName = "Bahrain International Circuit"; 
+            PrintPredictions(predictionEngine, bahrain2021);
+        }
 
-            foreach (var d in bahrainDrivers)
+        private static void PrintPredictions(PredictionEngine<TyreStint, TyreStintPrediction> predictionEngine, Race race)
+        {
+            foreach (var d in race.Drivers)
             {
-                foreach (var c in bahrainTyres)
+                foreach (var c in race.TyreCompounds)
                 {
                     var prediction = predictionEngine.Predict(new TyreStint()
                     {
-                        Track = trackName,
-                        Team = d.Team, 
-                        Car = d.Car, 
-                        Driver = d.Driver, 
-                        Compound = c, 
-                        AirTemperature = airTemp, 
-                        TrackTemperature = trackTemp, 
-                        Reason = stopReason
+                        Track = race.Track.Name,
+                        TrackLength = race.Track.Distance,
+                        Team = d.Team,
+                        Car = d.Car,
+                        Driver = d.Name,
+                        Compound = c,
+                        AirTemperature = race.AirTemperature,
+                        TrackTemperature = race.TrackTemperature,
+                        Reason = "Pit Stop"
                     });
-                    Console.WriteLine($"| {d.Driver} | {c} | {prediction.Laps} |  |");
+                    Console.WriteLine($"| {d.Name} | {c} | {prediction.Distance / race.Track.Distance} |  |");
                 }
             }
 
-            Console.WriteLine("======================");
         }
-    }
-
-    public class TeamDriverMatch
-    {
-        public string Team { get; set; }
-        public string Car { get; set; }
-        public string Driver { get; set; }
     }
 }
