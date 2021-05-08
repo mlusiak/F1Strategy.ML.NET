@@ -42,7 +42,7 @@ namespace Tyres
                     "TeamEncoded", "CarEncoded", "DriverEncoded", "CompoundEncoded", nameof(TyreStint.AirTemperature), nameof(TyreStint.TrackTemperature)));
 
             // Setting the training algorithm
-            var trainer = mlContext.Regression.Trainers.OnlineGradientDescent(labelColumnName: "Label", featureColumnName: "Features");
+            var trainer = mlContext.Regression.Trainers.Sdca(labelColumnName: "Label", featureColumnName: "Features");
             var trainingPipeline = pipeline.Append(trainer);
 
             // Training the model
@@ -146,8 +146,8 @@ namespace Tyres
                     Car = d.Car,
                     Driver = d.Name,
                     Compound = d.StartingCompound,
-                    AirTemperature = 9.3f,
-                    TrackTemperature = 17.5f,
+                    AirTemperature = 25.0f,
+                    TrackTemperature = 43.7f,
                     Reason = "Pit Stop"
                 });
                 Console.WriteLine($"| {d.Name} | {d.StartingCompound} | {prediction.Distance / Season2021.Tracks["Imola"].Distance} |  |  |");
