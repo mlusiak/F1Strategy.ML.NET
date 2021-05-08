@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.ML.Data;
+﻿using Microsoft.ML.Data;
 
-namespace Tyres
+namespace Tyres.DataModels
 {
     public class TyreStint
     {
         [LoadColumn(1)]
         public string Track;
+        [LoadColumn(3)]
+        public float TrackLength;
         [LoadColumn(4)]
         public string Team;
         [LoadColumn(5)]
@@ -27,9 +26,19 @@ namespace Tyres
         public float Laps;
     }
 
+    public class TransformedTyreStint : TyreStint
+    {
+        public float Distance { get; set; }
+    }
+
     public class TyreStintPrediction
     {
-        [ColumnName("Score")]
-        public float Laps;
+        [ColumnName("Score")] 
+        public float Distance;
+    }
+
+    public class CustomDistanceMapping
+    {
+        public float Distance { get; set; }
     }
 }
