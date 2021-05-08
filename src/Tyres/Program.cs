@@ -87,10 +87,12 @@ namespace Tyres
                 AirTemperature = 20.5f,
                 TrackTemperature = 28.3f
             };
-            PrintPredictions(predictionEngine, bahrain2021);
+            //PrintAllPredictions(predictionEngine, bahrain2021);
+
+            PrintTop10ImolaPortimao(predictionEngine);
         }
 
-        private static void PrintPredictions(PredictionEngine<TyreStint, TyreStintPrediction> predictionEngine, Race race)
+        private static void PrintAllPredictions(PredictionEngine<TyreStint, TyreStintPrediction> predictionEngine, Race race)
         {
             foreach (var d in race.Drivers)
             {
@@ -113,5 +115,83 @@ namespace Tyres
             }
 
         }
+
+        private static void PrintTop10ImolaPortimao(PredictionEngine<TyreStint, TyreStintPrediction> predictionEngine)
+        {
+            var ImolaTop10 = new List<Top10Driver>()
+            {
+                new Top10Driver() {Team = "Mercedes", Car = "W12", Name = "Lewis Hamilton", StartingCompound = "C3"},
+                new Top10Driver() {Team = "Red Bull", Car = "RB16B", Name = "Sergio Pérez", StartingCompound = "C4"},
+                new Top10Driver() {Team = "Red Bull", Car = "RB16B", Name = "Max Verstappen", StartingCompound = "C3"},
+                new Top10Driver() {Team = "Ferrari", Car = "SF21", Name = "Charles Leclerc", StartingCompound = "C4"},
+                new Top10Driver() {Team = "Toro Rosso / AlphaTauri", Car = "AT02", Name = "Pierre Gasly", StartingCompound = "C4"},
+                new Top10Driver() {Team = "McLaren", Car = "MCL35M", Name = "Daniel Ricciardo", StartingCompound = "C4"},
+                new Top10Driver() {Team = "McLaren", Car = "MCL35M", Name = "Lando Norris", StartingCompound = "C4"},
+                new Top10Driver() {Team = "Mercedes", Car = "W12", Name = "Valtteri Bottas", StartingCompound = "C3"},
+                new Top10Driver() {Team = "Renault / Alpine", Car = "A521", Name = "Esteban Ocon", StartingCompound = "C4"},
+                new Top10Driver() {Team = "Force India / Racing Point / Aston Martin", Car = "AMR21", Name = "Lance Stroll", StartingCompound = "C4"},
+            };
+
+            var PortimaoTop10 = new List<Top10Driver>()
+            {
+                new Top10Driver() {Team = "Mercedes", Car = "W12", Name = "Valtteri Bottas", StartingCompound = "C2"},
+                new Top10Driver() {Team = "Mercedes", Car = "W12", Name = "Lewis Hamilton", StartingCompound = "C2"},
+                new Top10Driver() {Team = "Red Bull", Car = "RB16B", Name = "Max Verstappen", StartingCompound = "C2"},
+                new Top10Driver() {Team = "Red Bull", Car = "RB16B", Name = "Sergio Pérez", StartingCompound = "C2"},
+                new Top10Driver() {Team = "Ferrari", Car = "SF21", Name = "Carlos Sainz", StartingCompound = "C3"},
+                new Top10Driver() {Team = "Renault / Alpine", Car = "A521", Name = "Esteban Ocon", StartingCompound = "C3"},
+                new Top10Driver() {Team = "McLaren", Car = "MCL35M", Name = "Lando Norris", StartingCompound = "C3"},
+                new Top10Driver() {Team = "Ferrari", Car = "SF21", Name = "Charles Leclerc", StartingCompound = "C2"},
+                new Top10Driver() {Team = "Toro Rosso / AlphaTauri", Car = "AT02", Name = "Pierre Gasly", StartingCompound = "C3"},
+                new Top10Driver() {Team = "Force India / Racing Point / Aston Martin", Car = "AMR21", Name = "Sebastian Vettel", StartingCompound = "C3"},
+            };
+
+
+            Console.WriteLine("Imola");
+            Console.WriteLine("==========");
+            foreach (var d in ImolaTop10)
+            {
+                var prediction = predictionEngine.Predict(new TyreStint()
+                {
+                    Track = Season2021.Tracks["Imola"].Name,
+                    TrackLength = Season2021.Tracks["Imola"].Distance,
+                    Team = d.Team,
+                    Car = d.Car,
+                    Driver = d.Name,
+                    Compound = d.StartingCompound,
+                    AirTemperature = 9.3f,
+                    TrackTemperature = 17.5f,
+                    Reason = "Pit Stop"
+                });
+                Console.WriteLine($"| {d.Name} | {d.StartingCompound} | {prediction.Distance / Season2021.Tracks["Imola"].Distance} |  |  |");
+            }
+            Console.WriteLine("");
+
+            Console.WriteLine("Portimão");
+            Console.WriteLine("==========");
+            foreach (var d in PortimaoTop10)
+            {
+                var prediction = predictionEngine.Predict(new TyreStint()
+                {
+                    Track = Season2021.Tracks["Portimão"].Name,
+                    TrackLength = Season2021.Tracks["Portimão"].Distance,
+                    Team = d.Team,
+                    Car = d.Car,
+                    Driver = d.Name,
+                    Compound = d.StartingCompound,
+                    AirTemperature = 19.8f,
+                    TrackTemperature = 40.3f,
+                    Reason = "Pit Stop"
+                });
+                Console.WriteLine($"| {d.Name} | {d.StartingCompound} | {prediction.Distance / Season2021.Tracks["Portimão"].Distance} |  |  |");
+            }
+        }
+
+
+    }
+
+    public class Top10Driver : Driver
+    {
+        public string StartingCompound { get; set; }
     }
 }
