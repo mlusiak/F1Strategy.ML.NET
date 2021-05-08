@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.ComTypes;
+using System.Linq;
 using Microsoft.ML;
 
 namespace Tyres
@@ -18,10 +19,11 @@ namespace Tyres
             var data = mlContext.Data.LoadFromTextFile<TyreStint>(DatasetsLocation, ';', true);
 
             // Filtering data
-            //mlContext.Data.CreateEnumerable<TyreStint>(data, reuseRowObject: false);
+            var filtered = mlContext.Data.FilterByCustomPredicate(data, (TyreStint row) => !(row.Reason.Equals("Pit Stop") || row.Reason.Equals("Race Finish")) );
+            var debug = mlContext.Data.CreateEnumerable<TyreStint>(filtered, reuseRowObject: false).Count();
 
             // Divide dataset into training and testing data
-            var split = mlContext.Data.TrainTestSplit(data, testFraction: 0.1);
+            var split = mlContext.Data.TrainTestSplit(filtered, testFraction: 0.1);
             var trainingData = split.TrainSet;
             var testingData = split.TestSet;
 
