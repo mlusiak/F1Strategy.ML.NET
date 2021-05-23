@@ -1,4 +1,6 @@
-﻿using Microsoft.ML.Data;
+﻿using System;
+using Microsoft.ML.Data;
+using Microsoft.ML.Transforms;
 
 namespace Tyres.DataModels
 {
@@ -26,19 +28,36 @@ namespace Tyres.DataModels
         public float Laps;
     }
 
-    public class TransformedTyreStint : TyreStint
+    public class DistanceTyreStint : TyreStint
     {
         public float Distance { get; set; }
     }
 
     public class TyreStintPrediction
     {
-        [ColumnName("Score")] 
+        [ColumnName("Score")]
         public float Distance;
     }
 
-    public class CustomDistanceMapping
+    public class LapsToDistanceInput
+    {
+        public float TrackLength { get; set; }
+        public float Laps { get; set; }
+    }
+
+    public class LapsToDistanceOutput
     {
         public float Distance { get; set; }
+    }
+
+    [CustomMappingFactoryAttribute(nameof(CustomMappings.DistanceMapping))]
+    public class CustomMappings : CustomMappingFactory<LapsToDistanceInput, LapsToDistanceOutput>
+    {
+        public static void DistanceMapping(LapsToDistanceInput input, LapsToDistanceOutput output) => output.Distance = input.Laps * input.TrackLength;
+
+        public override Action<LapsToDistanceInput, LapsToDistanceOutput> GetMapping()
+        {
+            return DistanceMapping;
+        }
     }
 }
