@@ -24,40 +24,13 @@ namespace Tyres.DataModels
         public float TrackTemperature;
         [LoadColumn(10)]
         public string Reason;
-        [LoadColumn(11)]
-        public float Laps;
-    }
-
-    public class DistanceTyreStint : TyreStint
-    {
-        public float Distance { get; set; }
+        [LoadColumn(12)]
+        public float Distance;
     }
 
     public class TyreStintPrediction
     {
         [ColumnName("Score")]
         public float Distance;
-    }
-
-    public class LapsToDistanceInput
-    {
-        public float TrackLength { get; set; }
-        public float Laps { get; set; }
-    }
-
-    public class LapsToDistanceOutput
-    {
-        public float Distance { get; set; }
-    }
-
-    [CustomMappingFactoryAttribute(nameof(CustomMappings.DistanceMapping))]
-    public class CustomMappings : CustomMappingFactory<LapsToDistanceInput, LapsToDistanceOutput>
-    {
-        public static void DistanceMapping(LapsToDistanceInput input, LapsToDistanceOutput output) => output.Distance = input.Laps * input.TrackLength;
-
-        public override Action<LapsToDistanceInput, LapsToDistanceOutput> GetMapping()
-        {
-            return DistanceMapping;
-        }
     }
 }

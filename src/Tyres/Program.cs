@@ -18,7 +18,6 @@ namespace Tyres
         static void Main(string[] args)
         {
             var mlContext = new MLContext(seed: 0);
-            mlContext.ComponentCatalog.RegisterAssembly(typeof(CustomMappings).Assembly);
 
             // Load data
             var data = mlContext.Data.LoadFromTextFile<TyreStint>(DatasetsLocation, ';', true);
@@ -27,11 +26,6 @@ namespace Tyres
             var filtered = mlContext.Data.FilterByCustomPredicate(data, (TyreStint row) => !(row.Reason.Equals("Pit Stop") || row.Reason.Equals("Race Finish")) );
             var debug = mlContext.Data.CreateEnumerable<TyreStint>(filtered, reuseRowObject: false).Count();
 
-            // Transforming to add distancefeature
-            var customTransformer = mlContext.Transforms.CustomMapping<LapsToDistanceInput, LapsToDistanceOutput>(CustomMappings.DistanceMapping, "LapsToDistance");
-            var transformed = customTransformer.Fit(filtered).Transform(filtered);
-            var debug2 = mlContext.Data.CreateEnumerable<DistanceTyreStint>(transformed, reuseRowObject: false).ToList();
-
             // Divide dataset into training and testing data
             var split = mlContext.Data.TrainTestSplit(filtered, testFraction: 0.1);
             var trainingData = split.TrainSet;
@@ -39,7 +33,7 @@ namespace Tyres
 
 
             // Run AutoML experiment
-            var experimentTime = 60u;
+            var experimentTime = 900u;
             Console.WriteLine("=============== Training the model ===============");
             Console.WriteLine($"Running AutoML regression experiment for {experimentTime} seconds...");
             var experimentResult = mlContext.Auto()
@@ -47,16 +41,14 @@ namespace Tyres
                 .Execute(trainingData, testingData,
                     columnInformation: new ColumnInformation()
                     {
-                        CategoricalColumnNames = { nameof(DistanceTyreStint.Team), nameof(DistanceTyreStint.Car),  nameof(DistanceTyreStint.Driver), nameof(DistanceTyreStint.Compound), nameof(DistanceTyreStint.Reason) },
-                        NumericColumnNames = { nameof(DistanceTyreStint.AirTemperature), nameof(DistanceTyreStint.TrackTemperature) },
-                        LabelColumnName = nameof(DistanceTyreStint.Distance)
-                    },
-                    preFeaturizer: customTransformer
-                    );
+                        CategoricalColumnNames = { nameof(TyreStint.Team), nameof(TyreStint.Car),  nameof(TyreStint.Driver), nameof(TyreStint.Compound), nameof(TyreStint.Reason) },
+                        NumericColumnNames = { nameof(TyreStint.AirTemperature), nameof(TyreStint.TrackTemperature) },
+                        LabelColumnName = nameof(TyreStint.Distance)
+                    }
+                );
 
 
             // Print top models found by AutoML
-            Console.WriteLine();
             TrainingHelper.PrintTopModels(experimentResult);
 
             Console.WriteLine("===== Evaluating model's accuracy with test data =====");
@@ -65,18 +57,18 @@ namespace Tyres
             var trainedModel = best.Model;
             var predictions = trainedModel.Transform(testingData);
 
-            var metrics = mlContext.Regression.Evaluate(predictions, labelColumnName: nameof(DistanceTyreStint.Distance), scoreColumnName: "Score");
+            var metrics = mlContext.Regression.Evaluate(predictions, labelColumnName: nameof(TyreStint.Distance), scoreColumnName: "Score");
             TrainingHelper.PrintRegressionMetrics(best.TrainerName, metrics);
 
 
             // Run sample predictions
             var predictionEngine = mlContext.Model.CreatePredictionEngine<TyreStint, TyreStintPrediction>(trainedModel);
 
-            var lh = new DistanceTyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Mercedes", Car = "W12", Driver = "Lewis Hamilton", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f, Reason = "Pit Stop" };
+            var lh = new TyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Mercedes", Car = "W12", Driver = "Lewis Hamilton", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f, Reason = "Pit Stop" };
             var lhPred = predictionEngine.Predict(lh);
             var lhLaps = lhPred.Distance / 5412f;
 
-            var mv = new DistanceTyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Red Bull", Car = "RB16B", Driver = "Max Verstappen", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f, Reason = "Pit Stop" };
+            var mv = new TyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Red Bull", Car = "RB16B", Driver = "Max Verstappen", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f, Reason = "Pit Stop" };
             var mvPred = predictionEngine.Predict(mv);
             var mvLaps = mvPred.Distance / 5412f;
 
@@ -97,7 +89,7 @@ namespace Tyres
                 new Top10Driver() {Team = "Renault / Alpine", Car = "A521", Name = "Esteban Ocon", StartingCompound = "C5"},
             };
 
-            DataHelper.PrintPredictionTable(predictionEngine, "Monaco", 25.0f, 43.7f, top10Monaco);
+            DataHelper.PrintPredictionTable(predictionEngine, "Monaco", 20.0f, 35.0f, top10Monaco);
         }
     }
 }

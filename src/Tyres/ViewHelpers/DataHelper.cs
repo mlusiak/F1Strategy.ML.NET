@@ -11,14 +11,16 @@ namespace Tyres.ViewHelpers
     {
         public static void PrintPredictionTable(PredictionEngine<TyreStint, TyreStintPrediction> predictionEngine, string trackName, float airTemperature, float trackTemperature, List<Top10Driver> drivers)
         {
-            Console.WriteLine(Season2021.Tracks[trackName].Name);
+            var monaco = Season2021.Tracks[trackName];
+
+            Console.WriteLine(monaco.Name);
             Console.WriteLine("==========");
             foreach (var d in drivers)
             {
                 var prediction = predictionEngine.Predict(new TyreStint()
                 {
-                    Track = Season2021.Tracks[trackName].Name,
-                    TrackLength = Season2021.Tracks[trackName].Distance,
+                    Track = monaco.Name,
+                    TrackLength = monaco.TrackLength,
                     Team = d.Team,
                     Car = d.Car,
                     Driver = d.Name,
@@ -27,7 +29,7 @@ namespace Tyres.ViewHelpers
                     TrackTemperature = trackTemperature,
                     Reason = "Pit Stop"
                 });
-                Console.WriteLine($"| {d.Name} | {d.StartingCompound} | {prediction.Distance } |  |  |");
+                Console.WriteLine($"| {d.Name} | {d.StartingCompound} | {prediction.Distance / monaco.TrackLength } |  |  |");
             }
             Console.WriteLine("");
         }

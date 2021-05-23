@@ -33,11 +33,11 @@ namespace Tyres.StaticData
 
         public static Dictionary<string, Track> Tracks = new Dictionary<string, Track>()
         {
-            { "Bahrain", new Track() {Name = "Bahrain International Circuit", Distance = 5412f} },
-            { "Imola", new Track() {Name = "Imola", Distance = 4909f } },
-            { "Portimão", new Track() {Name = "Portimão", Distance = 4653f } },
-            { "Catalunya", new Track() {Name = "Catalunya", Distance = 4675f } },
-            { "Monaco", new Track() {Name = "Monaco", Distance = 3337f } }
+            { "Bahrain", new Track() {Name = "Bahrain International Circuit", TrackLength = 5412f} },
+            { "Imola", new Track() {Name = "Imola", TrackLength = 4909f } },
+            { "Portimão", new Track() {Name = "Portimão", TrackLength = 4653f } },
+            { "Catalunya", new Track() {Name = "Catalunya", TrackLength = 4675f } },
+            { "Monaco", new Track() {Name = "Monaco", TrackLength = 3337f } }
         };
     }
 }

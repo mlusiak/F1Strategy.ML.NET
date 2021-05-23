@@ -9,6 +9,7 @@ namespace Tyres.ViewHelpers
     {
         public static void PrintTopModels(ExperimentResult<RegressionMetrics> experimentResult)
         {
+            Console.WriteLine();
             // Get top few runs ranked by R-Squared.
             // R-Squared is a metric to maximize, so OrderByDescending() is correct.
             // For RMSE and other regression metrics, OrderByAscending() is correct.

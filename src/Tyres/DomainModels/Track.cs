@@ -5,7 +5,7 @@ namespace Tyres.DomainModels
     public class Track
     {
         public string Name { get; set; }
-        public float Distance { get; set; }
+        public float TrackLength { get; set; }
     }
 
     public class Race
