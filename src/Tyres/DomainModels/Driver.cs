@@ -7,4 +7,9 @@
         public string Car { get; set; }
 
     }
+
+    public class Top10Driver : Driver
+    {
+        public string StartingCompound { get; set; }
+    }
 }

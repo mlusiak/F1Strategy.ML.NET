@@ -37,6 +37,7 @@ namespace Tyres.StaticData
             { "Imola", new Track() {Name = "Imola", Distance = 4909f } },
             { "Portimão", new Track() {Name = "Portimão", Distance = 4653f } },
             { "Catalunya", new Track() {Name = "Catalunya", Distance = 4675f } },
+            { "Monaco", new Track() {Name = "Monaco", Distance = 3337f } }
         };
     }
 }
