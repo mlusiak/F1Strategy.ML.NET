@@ -22,12 +22,8 @@ namespace Tyres
             // Load data
             var data = mlContext.Data.LoadFromTextFile<TyreStint>(DatasetsLocation, ';', true);
 
-            // Filtering data
-            var filtered = mlContext.Data.FilterByCustomPredicate(data, (TyreStint row) => !(row.Reason.Equals("Pit Stop") || row.Reason.Equals("Race Finish")) );
-            var debug = mlContext.Data.CreateEnumerable<TyreStint>(filtered, reuseRowObject: false).Count();
-
             // Divide dataset into training and testing data
-            var split = mlContext.Data.TrainTestSplit(filtered, testFraction: 0.1);
+            var split = mlContext.Data.TrainTestSplit(data, testFraction: 0.1);
             var trainingData = split.TrainSet;
             var testingData = split.TestSet;
 
@@ -41,7 +37,7 @@ namespace Tyres
                 .Execute(trainingData, testingData,
                     columnInformation: new ColumnInformation()
                     {
-                        CategoricalColumnNames = { nameof(TyreStint.Team), nameof(TyreStint.Car),  nameof(TyreStint.Driver), nameof(TyreStint.Compound), nameof(TyreStint.Reason) },
+                        CategoricalColumnNames = { nameof(TyreStint.Team), nameof(TyreStint.Driver), nameof(TyreStint.Compound) },
                         NumericColumnNames = { nameof(TyreStint.AirTemperature), nameof(TyreStint.TrackTemperature) },
                         LabelColumnName = nameof(TyreStint.Distance)
                     }
@@ -64,32 +60,32 @@ namespace Tyres
             // Run sample predictions
             var predictionEngine = mlContext.Model.CreatePredictionEngine<TyreStint, TyreStintPrediction>(trainedModel);
 
-            var lh = new TyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Mercedes", Car = "W12", Driver = "Lewis Hamilton", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f, Reason = "Pit Stop" };
+            var lh = new TyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Mercedes", Driver = "Lewis Hamilton", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f };
             var lhPred = predictionEngine.Predict(lh);
             var lhLaps = lhPred.Distance / 5412f;
 
-            var mv = new TyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Red Bull", Car = "RB16B", Driver = "Max Verstappen", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f, Reason = "Pit Stop" };
+            var mv = new TyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Red Bull", Driver = "Max Verstappen", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f };
             var mvPred = predictionEngine.Predict(mv);
             var mvLaps = mvPred.Distance / 5412f;
 
 
             // Printing predictions for top10 grid places
-            var top10Monaco = new List<Top10Driver>()
+            var top10Monza = new List<Top10Driver>()
             {
-                new Top10Driver() {Team = "Ferrari", Car = "SF21", Name = "Charles Leclerc", StartingCompound = "C5"},
-                new Top10Driver() {Team = "Red Bull", Car = "RB16B", Name = "Max Verstappen", StartingCompound = "C5"},
-                new Top10Driver() {Team = "Mercedes", Car = "W12", Name = "Valtteri Bottas", StartingCompound = "C5"},
-                new Top10Driver() {Team = "Ferrari", Car = "SF21", Name = "Carlos Sainz", StartingCompound = "C5"},
-                new Top10Driver() {Team = "McLaren", Car = "MCL35M", Name = "Lando Norris", StartingCompound = "C5"},
-                new Top10Driver() {Team = "Toro Rosso / AlphaTauri", Car = "AT02", Name = "Pierre Gasly", StartingCompound = "C5"},
-                new Top10Driver() {Team = "Mercedes", Car = "W12", Name = "Lewis Hamilton", StartingCompound = "C5"},
-                new Top10Driver() {Team = "Force India / Racing Point / Aston Martin", Car = "AMR21", Name = "Sebastian Vettel", StartingCompound = "C5"},
-                new Top10Driver() {Team = "Red Bull", Car = "RB16B", Name = "Sergio Pérez", StartingCompound = "C5"},
-                new Top10Driver() {Team = "Sauber / Alfa Romeo", Car = "C41", Name = "Antonio Giovinazzi", StartingCompound = "C5"},
-                new Top10Driver() {Team = "Renault / Alpine", Car = "A521", Name = "Esteban Ocon", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Ferrari", Name = "Charles Leclerc", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Red Bull", Name = "Max Verstappen", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Mercedes", Name = "Valtteri Bottas", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Ferrari", Name = "Carlos Sainz", StartingCompound = "C5"},
+                new Top10Driver() {Team = "McLaren", Name = "Lando Norris", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Faenza", Name = "Pierre Gasly", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Mercedes", Name = "Lewis Hamilton", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Silverstone", Name = "Sebastian Vettel", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Red Bull", Name = "Sergio Pérez", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Sauber", Name = "Antonio Giovinazzi", StartingCompound = "C5"},
+                new Top10Driver() {Team = "Enstone", Name = "Esteban Ocon", StartingCompound = "C5"},
             };
 
-            DataHelper.PrintPredictionTable(predictionEngine, "Monaco", 20.0f, 35.0f, top10Monaco);
+            DataHelper.PrintPredictionTable(predictionEngine, "Monza", 26.0f, 45.0f, top10Monza);
         }
     }
 }

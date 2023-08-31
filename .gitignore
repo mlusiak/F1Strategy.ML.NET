@@ -343,3 +343,6 @@ healthchecksdb
 
 # Data files
 *.csv
+
+# Python Envs
+.fastf1

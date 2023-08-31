@@ -13,18 +13,14 @@ namespace Tyres.DataModels
         [LoadColumn(4)]
         public string Team;
         [LoadColumn(5)]
-        public string Car;
-        [LoadColumn(6)]
         public string Driver;
-        [LoadColumn(7)]
+        [LoadColumn(6)]
         public string Compound;
-        [LoadColumn(8)]
+        [LoadColumn(7)]
         public float AirTemperature;
-        [LoadColumn(9)]
+        [LoadColumn(8)]
         public float TrackTemperature;
-        [LoadColumn(10)]
-        public string Reason;
-        [LoadColumn(12)]
+        [LoadColumn(9)]
         public float Distance;
     }
 
