@@ -19,15 +19,15 @@ namespace Tyres.ViewHelpers
             {
                 var prediction = predictionEngine.Predict(new TyreStint()
                 {
+                    Season = 2023,
                     Track = track.Name,
-                    TrackLength = track.TrackLength,
                     Team = d.Team,
                     Driver = d.Name,
-                    Compound = d.StartingCompound,
                     AirTemperature = airTemperature,
                     TrackTemperature = trackTemperature,
+                    Compound = d.StartingCompound,
                 });
-                Console.WriteLine($"| {d.Name} | {d.StartingCompound} | {prediction.Distance / track.TrackLength } |  |  |");
+                Console.WriteLine($"| {d.Name} | {d.StartingCompound} | {prediction.StintLength} |  |  |");
             }
             Console.WriteLine("");
         }

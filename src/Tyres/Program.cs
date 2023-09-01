@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using Microsoft.ML;
 using Microsoft.ML.Data;
@@ -13,10 +14,12 @@ namespace Tyres
 {
     public class Program
     {
-        private static string DatasetsLocation = @"../../../../../data/TyreStints.csv";
+        private static string DatasetsLocation = @"../../../../../data/stints.csv";
 
         static void Main(string[] args)
         {
+            //Environment.SetEnvironmentVariable("AutoMLServiceRegressors", "LGBM;RF;FASTTREE;LBFGS;SDCA");
+
             var mlContext = new MLContext(seed: 0);
 
             // Load data
@@ -29,7 +32,7 @@ namespace Tyres
 
 
             // Run AutoML experiment
-            var experimentTime = 900u;
+            var experimentTime = 60u;
             Console.WriteLine("=============== Training the model ===============");
             Console.WriteLine($"Running AutoML regression experiment for {experimentTime} seconds...");
             var experimentResult = mlContext.Auto()
@@ -38,11 +41,10 @@ namespace Tyres
                     columnInformation: new ColumnInformation()
                     {
                         CategoricalColumnNames = { nameof(TyreStint.Team), nameof(TyreStint.Driver), nameof(TyreStint.Compound) },
-                        NumericColumnNames = { nameof(TyreStint.AirTemperature), nameof(TyreStint.TrackTemperature) },
-                        LabelColumnName = nameof(TyreStint.Distance)
+                        NumericColumnNames = { nameof(TyreStint.Season), nameof(TyreStint.AirTemperature), nameof(TyreStint.TrackTemperature) },
+                        LabelColumnName = nameof(TyreStint.StintLength)
                     }
                 );
-
 
             // Print top models found by AutoML
             TrainingHelper.PrintTopModels(experimentResult);
@@ -53,20 +55,20 @@ namespace Tyres
             var trainedModel = best.Model;
             var predictions = trainedModel.Transform(testingData);
 
-            var metrics = mlContext.Regression.Evaluate(predictions, labelColumnName: nameof(TyreStint.Distance), scoreColumnName: "Score");
+            var metrics = mlContext.Regression.Evaluate(predictions, labelColumnName: nameof(TyreStint.StintLength), scoreColumnName: "Score");
             TrainingHelper.PrintRegressionMetrics(best.TrainerName, metrics);
 
 
             // Run sample predictions
             var predictionEngine = mlContext.Model.CreatePredictionEngine<TyreStint, TyreStintPrediction>(trainedModel);
 
-            var lh = new TyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Mercedes", Driver = "Lewis Hamilton", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f };
+            var lh = new TyreStint() { Track = "Bahrain International Circuit", Team = "Mercedes", Driver = "Lewis Hamilton", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f };
             var lhPred = predictionEngine.Predict(lh);
-            var lhLaps = lhPred.Distance / 5412f;
+            var lhLaps = lhPred.StintLength;
 
-            var mv = new TyreStint() { Track = "Bahrain International Circuit", TrackLength = 5412f, Team = "Red Bull", Driver = "Max Verstappen", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f };
+            var mv = new TyreStint() { Track = "Bahrain International Circuit", Team = "Red Bull", Driver = "Max Verstappen", Compound = "C3", AirTemperature = 20.5f, TrackTemperature = 28.3f };
             var mvPred = predictionEngine.Predict(mv);
-            var mvLaps = mvPred.Distance / 5412f;
+            var mvLaps = mvPred.StintLength;
 
 
             // Printing predictions for top10 grid places
@@ -89,3 +91,7 @@ namespace Tyres
         }
     }
 }
+
+
+
+//TODO out of bound exception if moving to a 2.0 api can be related to wrong path to data

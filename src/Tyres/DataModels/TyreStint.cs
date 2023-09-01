@@ -7,26 +7,33 @@ namespace Tyres.DataModels
     public class TyreStint
     {
         [LoadColumn(1)]
+        public float Season;
+
+        [LoadColumn(2)]
         public string Track;
+
         [LoadColumn(3)]
-        public float TrackLength;
-        [LoadColumn(4)]
         public string Team;
-        [LoadColumn(5)]
+
+        [LoadColumn(4)]
         public string Driver;
-        [LoadColumn(6)]
-        public string Compound;
-        [LoadColumn(7)]
+
+        [LoadColumn(5)]
         public float AirTemperature;
-        [LoadColumn(8)]
+
+        [LoadColumn(6)]
         public float TrackTemperature;
+
         [LoadColumn(9)]
-        public float Distance;
+        public string Compound;
+
+        [LoadColumn(8)]
+        public float StintLength;
     }
 
     public class TyreStintPrediction
     {
         [ColumnName("Score")]
-        public float Distance;
+        public float StintLength;
     }
 }

@@ -88,8 +88,13 @@ def tyre_label_to_compound(name, year, round):
 def normalize_team_name(name):
     if name == "Alfa Romeo Racing" or name == "Alfa Romeo": return "Sauber"
     if name == "AlphaTauri" or name == "Toro Rosso": return "Faenza"
-    if name == "Racing Point" or name == "Aston Martin": return "Silverstone"
+    if name == "Force India" or name == "Racing Point" or name == "Aston Martin": return "Silverstone"
     if name == "Alpine" or name == "Renault": return "Enstone"
+    return name
+
+def normalize_track_name(name):
+    if name == "Yas Marina " or name == "Yas Island": return "Abu Dhabi"
+    if name == "Marina Bay": return "Singapore"
     return name
 
 def plot_stints(drivers, stints):
@@ -153,7 +158,7 @@ def get_session_stints(session, year, round):
     stints["Pressure"] = weather.loc[1, "Pressure"]
 
     stints["Season"] = year
-    stints["Track"] = session.event.Location
+    stints["Track"] = normalize_track_name(session.event.Location)
     #TODO Add track length
 
     stints = stints.groupby(["Season", "Track", "Team", "Driver", "Compound", "Stint", "AirTemp", "TrackTemp", "Pressure"])
